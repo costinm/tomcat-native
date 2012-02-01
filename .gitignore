@@ -1,0 +1,41 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.lo
+*.la
+*.so
+*.a
+
+# Cmake generated
+.cproject
+.project
+CMakeFiles
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+
+# downloaded
+deps/
+
+# autoconf/libtool generated
+native/.libs
+native/.make.dirs
+native/build-outputs.mk
+native/build/apr_common.m4
+native/build/config.guess
+native/build/config.sub
+native/build/find_apr.m4
+native/build/install.sh
+native/build/rules.mk
+native/config.log
+native/config.nice
+native/config.status
+native/configure
+native/tcnative.pc
+native/tcnative.spec
+

@@ -4,9 +4,16 @@
 # ( or equivalent commands ). I tried to use 'ExternalProject_Add' to download, but doesn't seem
 # to do what I need. The source must go to deps/src/{apr,openssl}
 
+# For Eclipse: cmake -G "Eclipse CDT4 - Unix Makefiles"
 
-# Build: "make VERBOSE=1"
+# Build: "cmake . ; make VERBOSE=1"
 
+# It is still possible to build with libtool:
+# download_deps.sh
+# build openssl and apr
+# cd native
+# ./buildconf --with-apr=../deps/src/apr
+# ./configure --with-apr=/usr/local/apr --with-ssl=/usr/local/ssl
 
 
 cmake_minimum_required (VERSION 2.6) 
