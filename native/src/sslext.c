@@ -570,7 +570,7 @@ static int cb_server_npn(SSL *ssl, const unsigned char **out, unsigned int *outl
 	return SSL_TLSEXT_ERR_OK;
 }
 
-TCN_IMPLEMENT_CALL(jlong, SSLExt, setNPN)(TCN_STDARGS, jlong tc_ssl_ctx,
+TCN_IMPLEMENT_CALL(jint, SSLExt, setNPN)(TCN_STDARGS, jlong tc_ssl_ctx,
 		jbyteArray buf, jint len)
 {
 	tcn_ssl_ctxt_t *sslctx = J2P(tc_ssl_ctx, tcn_ssl_ctxt_t *);
@@ -609,7 +609,7 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, getNPN)(TCN_STDARGS, jlong tcsock, jbyteArray b
 
 #else
 
-TCN_IMPLEMENT_CALL(jlong, SSLExt, setNPN)(TCN_STDARGS, jlong tc_ssl_ctx,
+TCN_IMPLEMENT_CALL(jint, SSLExt, setNPN)(TCN_STDARGS, jlong tc_ssl_ctx,
 		jbyteArray buf, jint len)
 {
 	return (jint)-APR_ENOTIMPL;
