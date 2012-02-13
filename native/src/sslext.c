@@ -66,8 +66,6 @@ TCN_IMPLEMENT_CALL(jbyteArray, SSLExt, getSessionData)(TCN_STDARGS, jlong tcsock
 	return javaBytes;
 }
 
-#ifdef EXP_TICKETS
-// Experimenting with tickets
 TCN_IMPLEMENT_CALL(jint, SSLExt, getTicket)(TCN_STDARGS, jlong tcsock, jbyteArray buf)
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
@@ -106,7 +104,6 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setTicketKeys)(TCN_STDARGS, jlong tc_ssl_ctx, j
 	SSL_CTX_set_tlsext_ticket_keys(sslctx->ctx, keys, sizeof(keys));
 	return 0;
 }
-#endif
 
 // Debug code - copied from openssl app
 
@@ -420,20 +417,6 @@ void msg_cb(int write_p, int version, int content_type,
 	(void)BIO_flush(bio);
 }
 
-/*
- TCN_IMPLEMENT_CALL(jint, SSLSocket, setTlsHostname)(TCN_STDARGS, jlong sock,
- jbyteArray buf, jint offset, jint tosend)
- {
- //SSL_set_tlsext_host_name
- return 0;
- }
-
- TCN_IMPLEMENT_CALL(jString, SSLSocket, getTlsHostname)(TCN_STDARGS, jlong sock,
- jbyteArray buf, jint offset, jint tosend)
- {
- return NULL;
- }
- */
 
 TCN_IMPLEMENT_CALL(jint, SSLExt, debug)(TCN_STDARGS, jlong tcsock)
 {
@@ -484,7 +467,6 @@ TCN_IMPLEMENT_CALL( jbyteArray, SSLExt, getSessionData)(TCN_STDARGS, jlong tcsoc
 	return (jint)-APR_ENOTIMPL;
 }
 
-#ifdef EXP_TICKETS
 TCN_IMPLEMENT_CALL( jint, SSLExt, getTicket)(TCN_STDARGS, jlong tcsock, jbyteArray buf)
 {
 	return (jint)-APR_ENOTIMPL;
@@ -499,7 +481,6 @@ TCN_IMPLEMENT_CALL( jint, SSLExt, setTicketKeys)(TCN_STDARGS, jlong tc_ssl_ctx, 
 {
 	return (jint)-APR_ENOTIMPL;
 }
-#endif
 
 TCN_IMPLEMENT_CALL( jint, SSLExt, sslSetMode)(TCN_STDARGS, jlong tc_ssl_ctx, jint mode)
 {
