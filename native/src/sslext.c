@@ -420,7 +420,6 @@ void msg_cb(int write_p, int version, int content_type,
 	(void)BIO_flush(bio);
 }
 
-
 TCN_IMPLEMENT_CALL(jint, SSLExt, debug)(TCN_STDARGS, jlong tcsock)
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
