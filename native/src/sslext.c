@@ -33,9 +33,12 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setSessionData)(TCN_STDARGS, jlong tcsock, jbyt
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
 	tcn_ssl_conn_t *tcssl = (tcn_ssl_conn_t *)s->opaque;
-	unsigned char bytes[len];
+	unsigned char bytes[TCN_BUFFER_SZ];
 	const unsigned char *bytesp = &bytes[0];
 
+	if (len > TCN_BUFFER_SZ) {
+		return -1;
+	}
 	(*e)->GetByteArrayRegion(e, buf, 0, len, bytes);
 	SSL_SESSION* ssl_session = d2i_SSL_SESSION(NULL, &bytesp, len);
 
@@ -50,13 +53,13 @@ TCN_IMPLEMENT_CALL(jbyteArray, SSLExt, getSessionData)(TCN_STDARGS, jlong tcsock
 	SSL_SESSION *sess = SSL_get_session(tcssl->ssl);
 
 	int size = i2d_SSL_SESSION(sess, NULL);
-	if (size == 0) {
+	if (size == 0 || size > TCN_BUFFER_SZ) {
 		return NULL;
 	}
 
 	jbyteArray javaBytes = (*e)->NewByteArray(e, size);
 	if (javaBytes != NULL) {
-		unsigned char bytes[size];
+		unsigned char bytes[TCN_BUFFER_SZ];
 		unsigned char *bytesp = &bytes[0];
 
 		i2d_SSL_SESSION(sess, &bytesp);
@@ -495,9 +498,12 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setSNI)(TCN_STDARGS, jlong tcsock, jbyteArray b
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
 	tcn_ssl_conn_t *tcssl = (tcn_ssl_conn_t *)s->opaque;
-	unsigned char bytes[len];
+	unsigned char bytes[TCN_BUFFER_SIZE];
 	const unsigned char *bytesp = &bytes[0];
 
+	if (len > TCN_BUFFER_SIZE) {
+		return -1;
+	}
 	(*e)->GetByteArrayRegion(e, buf, 0, len, bytes);
 	SSL_set_tlsext_host_name(tcssl->ssl, &bytesp);
 	return 0;
