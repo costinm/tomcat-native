@@ -33,14 +33,14 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setSessionData)(TCN_STDARGS, jlong tcsock, jbyt
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
 	tcn_ssl_conn_t *tcssl = (tcn_ssl_conn_t *)s->opaque;
-	unsigned char bytes[TCN_BUFFER_SZ];
-	const unsigned char *bytesp = &bytes[0];
+	jbyte bytes[TCN_BUFFER_SZ];
+	const jbyte *bytesp = &bytes[0];
 
 	if (len > TCN_BUFFER_SZ) {
 		return -1;
 	}
 	(*e)->GetByteArrayRegion(e, buf, 0, len, bytes);
-	SSL_SESSION* ssl_session = d2i_SSL_SESSION(NULL, &bytesp, len);
+	SSL_SESSION* ssl_session = d2i_SSL_SESSION(NULL, (const unsigned char **)&bytesp, len);
 
 	SSL_set_session(tcssl->ssl, ssl_session);
 	return 0;
@@ -59,8 +59,8 @@ TCN_IMPLEMENT_CALL(jbyteArray, SSLExt, getSessionData)(TCN_STDARGS, jlong tcsock
 
 	jbyteArray javaBytes = (*e)->NewByteArray(e, size);
 	if (javaBytes != NULL) {
-		unsigned char bytes[TCN_BUFFER_SZ];
-		unsigned char *bytesp = &bytes[0];
+		jbyte bytes[TCN_BUFFER_SZ];
+		unsigned char *bytesp = (unsigned char *)&bytes[0];
 
 		i2d_SSL_SESSION(sess, &bytesp);
 		(*e)->SetByteArrayRegion(e, javaBytes, 0, size, bytes);
@@ -80,7 +80,7 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, getTicket)(TCN_STDARGS, jlong tcsock, jbyteArra
 	if (!x->tlsext_tick || x->tlsext_ticklen > bufLen) {
 		return 0;
 	}
-	(*e)->SetByteArrayRegion(e, buf, 0, x->tlsext_ticklen, &x->tlsext_tick[0]);
+	(*e)->SetByteArrayRegion(e, buf, 0, x->tlsext_ticklen, (jbyte *) &x->tlsext_tick[0]);
 
 	return x->tlsext_ticklen;
 }
@@ -92,7 +92,7 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setTicket)(TCN_STDARGS, jlong tcsock, jbyteArra
 	tcn_ssl_conn_t *tcssl = (tcn_ssl_conn_t *)s->opaque;
 
 	char * requestedTicket = apr_pcalloc(tcssl->pool, len);
-	(*e)->GetByteArrayRegion(e, buf, 0, len, requestedTicket);
+	(*e)->GetByteArrayRegion(e, buf, 0, len, (jbyte *) requestedTicket);
 	SSL_set_session_ticket_ext(tcssl->ssl, requestedTicket, len);
 	return 0;
 }
@@ -102,7 +102,7 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setTicketKeys)(TCN_STDARGS, jlong tc_ssl_ctx, j
 	tcn_ssl_ctxt_t *sslctx = J2P(tc_ssl_ctx, tcn_ssl_ctxt_t *);
 	unsigned char keys[48];
 
-	(*e)->GetByteArrayRegion(e, buf, 0, 48, keys);
+	(*e)->GetByteArrayRegion(e, buf, 0, 48, (jbyte *) keys);
 
 	SSL_CTX_set_tlsext_ticket_keys(sslctx->ctx, keys, sizeof(keys));
 	return 0;
@@ -498,10 +498,10 @@ TCN_IMPLEMENT_CALL(jint, SSLExt, setSNI)(TCN_STDARGS, jlong tcsock, jbyteArray b
 {
 	tcn_socket_t *s = J2P(tcsock, tcn_socket_t *);
 	tcn_ssl_conn_t *tcssl = (tcn_ssl_conn_t *)s->opaque;
-	unsigned char bytes[TCN_BUFFER_SIZE];
+	unsigned char bytes[TCN_BUFFER_SZ];
 	const unsigned char *bytesp = &bytes[0];
 
-	if (len > TCN_BUFFER_SIZE) {
+	if (len > TCN_BUFFER_SZ) {
 		return -1;
 	}
 	(*e)->GetByteArrayRegion(e, buf, 0, len, bytes);
