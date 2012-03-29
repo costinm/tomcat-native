@@ -358,7 +358,7 @@ TCN_IMPLEMENT_CALL(jint, Poll, poll)(TCN_STDARGS, jlong pollset,
 #ifdef TCN_DO_STATISTICS
                 p->sp_eintr++;
 #endif
-                continue;
+                /* Pass it to the caller - interrupt() was called */
             }
             TCN_ERROR_WRAP(rv);
 #ifdef TCN_DO_STATISTICS
@@ -500,9 +500,31 @@ TCN_IMPLEMENT_CALL(jint, Poll, interrupt)(TCN_STDARGS, jlong pollset)
 
     return (jint)apr_pollset_wakeup(p->pollset);
 }
+
+/* Temp, for porting to tomcat7 - it needs to keep running with old jni library.
+ * If new library is available spdy/npn/etc will start working.
+ */
+TCN_IMPLEMENT_CALL(jint, SSLExt, interrupt)(TCN_STDARGS, jlong pollset)
+{
+    tcn_pollset_t *p = J2P(pollset,  tcn_pollset_t *);
+
+    UNREFERENCED(o);
+    TCN_ASSERT(pollset != 0);
+
+    return (jint)apr_pollset_wakeup(p->pollset);
+}
 #else
 
 TCN_IMPLEMENT_CALL(jint, Poll, interrupt)(TCN_STDARGS, jlong pollset)
+{
+
+    UNREFERENCED_STDARGS;
+    UNREFERENCED(pollset);
+
+    return APR_ENOTIMPL;
+}
+
+TCN_IMPLEMENT_CALL(jint, SSLExt, interrupt)(TCN_STDARGS, jlong pollset)
 {
 
     UNREFERENCED_STDARGS;
